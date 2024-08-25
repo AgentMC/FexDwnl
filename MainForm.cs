@@ -149,20 +149,39 @@ namespace FexDwnl
             int i = 0;
             foreach (var webFile in children)
             {
-                var fileName = webFile.Name;
-                var dwnlLoc = GetFolderForFileByRule(fileName) ?? GetDownloadsFolder();
-                var filePath = Path.Combine(dwnlLoc, fileName);
-                using var writer = new StreamWriter(filePath);
+                var flowControl = DialogResult.Retry;
+                while (flowControl == DialogResult.Retry)
+                {
+                    try
+                    {
+                        var fileName = webFile.Name;
+                        var dwnlLoc = GetFolderForFileByRule(fileName) ?? GetDownloadsFolder();
+                        var filePath = Path.Combine(dwnlLoc, fileName);
+                        using var writer = new StreamWriter(filePath);
 
-                _writer = writer.BaseStream;
-                _length = AsIntMB(webFile.Size);
-                timer1.Start();
-                label4.Text = $"{++i}/{children.Count} ({_length}MB): {filePath}";
+                        _writer = writer.BaseStream;
+                        _length = AsIntMB(webFile.Size);
+                        timer1.Start();
+                        label4.Text = $"{++i}/{children.Count} ({_length}MB): {filePath}";
                 
-                using var webFileStream = await client.GetStreamAsync(webFile.DownloadUrl);
-                await webFileStream.CopyToAsync(_writer);
+                        using var webFileStream = await client.GetStreamAsync(webFile.DownloadUrl);
+                        await webFileStream.CopyToAsync(_writer);
                 
-                _writer = null;
+                        _writer = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        flowControl = MessageBox.Show(this,
+                                                      ex.ToString(),
+                                                      this.Text,
+                                                      MessageBoxButtons.AbortRetryIgnore,
+                                                      MessageBoxIcon.Error);
+                    }
+                }
+                if(flowControl == DialogResult.Abort)
+                {
+                    break;
+                }
             }
             _timerStop = true;
             label4.Text = string.Empty;
