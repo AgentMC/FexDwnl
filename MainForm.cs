@@ -138,6 +138,24 @@ namespace FexDwnl
             var fexApi = $"https://api.fex.net/api/v2/file/share/children/{key}?page=1&sort_by=name&per_page=500&is_desc=1";
             var json = await client.GetFromJsonAsync<Dictionary<string, object>>(fexApi);
             var result = ((JsonElement)json["children"]).Deserialize<List<FexChild>>(SO)!;
+            for (int i = result.Count - 1; i >= 0; i--)
+            {
+                var r = result[i];
+                if (r.IsDir)
+                {
+                    if(r.HasChildren)
+                    {
+                        var childItems = await FetchFex($"{key}/{r.Id}");
+                        for (int cidx = 0; cidx < childItems.Count; cidx++)
+                        {
+                            var child = childItems[cidx];
+                            child.Name = Path.Combine(r.Name, child.Name);
+                            result.Add(child);
+                        }
+                    }
+                    result.RemoveAt(i);
+                }
+            }
             return result;
         }
         public async Task<List<FexChild>> FetchFex() => await FetchFex(fexId.Text);
@@ -157,20 +175,31 @@ namespace FexDwnl
                         var fileName = webFile.Name;
                         var dwnlLoc = GetFolderForFileByRule(fileName) ?? GetDownloadsFolder();
                         var filePath = Path.Combine(dwnlLoc, fileName);
-                        using var writer = new StreamWriter(filePath);
 
-                        _writer = writer.BaseStream;
-                        _length = AsIntMB(webFile.Size);
-                        timer1.Start();
-                        label4.Text = $"{++i}/{children.Count} ({_length}MB): {filePath}";
+                        var fileTargetLoc = Path.GetDirectoryName(filePath)!;
+                        if(!Directory.Exists(fileTargetLoc)) Directory.CreateDirectory(fileTargetLoc);
+
+                        var peek = new FileInfo(filePath);
+                        if (!peek.Exists || peek.Length != webFile.Size)
+                        {
+                            using var writer = new StreamWriter(filePath);
+
+                            _writer = writer.BaseStream;
+                            _length = AsIntMB(webFile.Size);
+                            timer1.Start();
+                            label4.Text = $"{++i}/{children.Count} ({_length}MB): {filePath}";
                 
-                        using var webFileStream = await client.GetStreamAsync(webFile.DownloadUrl);
-                        await webFileStream.CopyToAsync(_writer);
+                            using var webFileStream = await client.GetStreamAsync(webFile.DownloadUrl);
+                            await webFileStream.CopyToAsync(_writer);
                 
-                        _writer = null;
+                            _writer = null;
+                        }
+
+                        flowControl = DialogResult.Ignore;
                     }
                     catch (Exception ex)
                     {
+                        i--;
                         flowControl = MessageBox.Show(this,
                                                       ex.ToString(),
                                                       this.Text,
@@ -186,6 +215,7 @@ namespace FexDwnl
             _timerStop = true;
             label4.Text = string.Empty;
             downloadButton.Enabled = true;
+            MessageBox.Show(this, "Download complete", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void TextBoxFexId_TextChanged(object sender, EventArgs e)
@@ -231,6 +261,6 @@ namespace FexDwnl
         private static extern string SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid id, int flags = 0, nint token = 0);
         private static string GetDownloadsFolder() => SHGetKnownFolderPath(FolderDownloads);
 
-        public record FexChild(string Name, string DownloadUrl, long Size);
+        public record struct FexChild(string Name, string DownloadUrl, long Size, bool HasChildren, bool IsDir, ulong Id);
     }
 }
