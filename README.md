@@ -14,9 +14,15 @@ User can specify the FeX ID or a whole URL and click Download.
 
 FeXDwnl will fetch the file metadata, locate the appropriate regexp and download the file(s) there.
 
-If no regexp matches, the root is designated as the user's Downloads folder.
+If no regexp matches any files, the root is designated as the user's Downloads folder.
+
+If any file has a regexp match, those which do not match any pattern are skipped.
+
+If the source is/has a folder, all subtree is analyzed and hierarchy is preserved.
 
 During the download, FeXDwnl tracks the progress and the number of files
+
+During the download, FexDwnl does not re-download previously downloaded files, unless their size changed.
 
 ## Prefetch
 
@@ -26,17 +32,11 @@ The window allows to check for an existing matching regexp or to create a new on
 
 If new regexp is needed, the window also allows to add the new regexp strait from it.
 
-It is useful when you are first download from a new source.
+It is useful when you are downloading from a new source for the first time.
 
 ## Edit, save and load regexps
 
 The application auto-loads, saves the patterns and allows to edit them.
-
-## More
-
-The applciation supports nested folders.
-
-When a file is to be downloaded, the application checks is the same file (name and size) already exists, and will not re-download.
 
 ![image](https://github.com/user-attachments/assets/6de0abfa-3730-4e07-92cd-863aa5cc059d)
 

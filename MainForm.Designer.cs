@@ -155,6 +155,7 @@
             // 
             // label4
             // 
+            label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label4.AutoSize = true;
             label4.Location = new Point(135, 291);
             label4.Name = "label4";

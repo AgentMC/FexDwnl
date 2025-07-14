@@ -1,10 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace FexDwnl
@@ -133,27 +131,27 @@ namespace FexDwnl
 
 
 
-        private async Task<List<FexChild>> FetchFex(string key)
+        private async Task<List<FexChild>> FetchFex(string key, ulong? childId = null)
         {
-            var fexApi = $"https://api.fex.net/api/v2/file/share/children/{key}?page=1&sort_by=name&per_page=500&is_desc=1";
-            var json = await client.GetFromJsonAsync<Dictionary<string, object>>(fexApi);
-            var result = ((JsonElement)json["children"]).Deserialize<List<FexChild>>(SO)!;
+            var fexApi = $"https://api.fex.net/api/v2/file/share/children/{key}{(childId == null ? string.Empty : "/" + childId)}?page=1&sort_by=name&per_page=500&is_desc=1";
+            var jFex = await client.GetFromJsonAsync<FexRoot>(fexApi, SO);
+            var result = jFex?.Children ?? [];
             for (int i = result.Count - 1; i >= 0; i--)
             {
                 var r = result[i];
                 if (r.IsDir)
                 {
+                    result.RemoveAt(i);
                     if(r.HasChildren)
                     {
-                        var childItems = await FetchFex($"{key}/{r.Id}");
+                        var childItems = await FetchFex(key, r.Id);
                         for (int cidx = 0; cidx < childItems.Count; cidx++)
                         {
                             var child = childItems[cidx];
-                            child.Name = Path.Combine(r.Name, child.Name);
+                            child.PathName = Path.Combine(r.Name, child.PathName);
                             result.Add(child);
                         }
                     }
-                    result.RemoveAt(i);
                 }
             }
             return result;
@@ -163,7 +161,12 @@ namespace FexDwnl
         private async void ButtonDownload_Click(object sender, EventArgs e)
         {
             downloadButton.Enabled = false;
+            label4.Text = "Fetching...";
             var children = await FetchFex();
+
+            var targetPaths = children.ToDictionary(c => c.PathName, c => GetFolderForFileByRule(c.PathName));
+            bool allowDownloads = targetPaths.Values.All(v => v == null);
+
             int i = 0;
             foreach (var webFile in children)
             {
@@ -172,27 +175,39 @@ namespace FexDwnl
                 {
                     try
                     {
-                        var fileName = webFile.Name;
-                        var dwnlLoc = GetFolderForFileByRule(fileName) ?? GetDownloadsFolder();
-                        var filePath = Path.Combine(dwnlLoc, fileName);
-
-                        var fileTargetLoc = Path.GetDirectoryName(filePath)!;
-                        if(!Directory.Exists(fileTargetLoc)) Directory.CreateDirectory(fileTargetLoc);
-
-                        var peek = new FileInfo(filePath);
-                        if (!peek.Exists || peek.Length != webFile.Size)
+                        var selector = $"{++i}/{children.Count}";
+                        var fileName = webFile.PathName;
+                        var dwnlLoc = targetPaths[fileName] ?? (allowDownloads ? DownloadsFolder : null);
+                        if (dwnlLoc != null)
                         {
-                            using var writer = new StreamWriter(filePath);
+                            var filePath = Path.Combine(dwnlLoc, fileName);
 
-                            _writer = writer.BaseStream;
-                            _length = AsIntMB(webFile.Size);
-                            timer1.Start();
-                            label4.Text = $"{++i}/{children.Count} ({_length}MB): {filePath}";
+                            var fileTargetLoc = Path.GetDirectoryName(filePath)!;
+                            if(!Directory.Exists(fileTargetLoc)) Directory.CreateDirectory(fileTargetLoc);
+
+                            var peek = new FileInfo(filePath);
+                            if (!peek.Exists || peek.Length != webFile.Size)
+                            {
+                                using var writer = new StreamWriter(filePath);
+
+                                _writer = writer.BaseStream;
+                                _length = AsIntMB(webFile.Size);
+                                timer1.Start();
+                                label4.Text = $"{selector} ({_length}MB): {filePath}";
                 
-                            using var webFileStream = await client.GetStreamAsync(webFile.DownloadUrl);
-                            await webFileStream.CopyToAsync(_writer);
+                                using var webFileStream = await client.GetStreamAsync(webFile.DownloadUrl);
+                                await webFileStream.CopyToAsync(_writer);
                 
-                            _writer = null;
+                                _writer = null;
+                            }
+                            else
+                            {
+                                await ShowMsgDelay(Color.Green, $"Skipping {selector}: file already downloaded.", 1000);
+                            }
+                        }
+                        else
+                        {
+                            await ShowMsgDelay(Color.Red, $"Skipping {selector}: no regex match.", 3000);
                         }
 
                         flowControl = DialogResult.Ignore;
@@ -216,6 +231,15 @@ namespace FexDwnl
             label4.Text = string.Empty;
             downloadButton.Enabled = true;
             MessageBox.Show(this, "Download complete", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async Task ShowMsgDelay(Color color, string msg, int delayMs)
+        {
+            var clr = label4.ForeColor;
+            label4.ForeColor = color;
+            label4.Text = msg;
+            await Task.Delay(delayMs);
+            label4.ForeColor = clr;
         }
 
         private void TextBoxFexId_TextChanged(object sender, EventArgs e)
@@ -257,10 +281,14 @@ namespace FexDwnl
 
         private static readonly Guid FolderDownloads = new("374DE290-123F-4565-9164-39C4925E467B");
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
-        [SuppressMessage("Interoperability", "SYSLIB1054:Use 'LibraryImportAttribute' instead of 'DllImportAttribute' to generate P/Invoke marshalling code at compile time", Justification = "Ugly signature")]
         private static extern string SHGetKnownFolderPath([MarshalAs(UnmanagedType.LPStruct)] Guid id, int flags = 0, nint token = 0);
-        private static string GetDownloadsFolder() => SHGetKnownFolderPath(FolderDownloads);
+        private static string DownloadsFolder { get; } = SHGetKnownFolderPath(FolderDownloads);
 
-        public record struct FexChild(string Name, string DownloadUrl, long Size, bool HasChildren, bool IsDir, ulong Id);
+        public record FexChild(string Name, string DownloadUrl, long Size, bool HasChildren, bool IsDir, ulong Id)
+        {
+            public string PathName { get { return field ?? Name; } set; }
+        }
+
+        public record FexRoot(List<FexChild> Children);
     }
 }

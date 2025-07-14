@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Text.RegularExpressions;
 
 namespace FexDwnl
 {
@@ -80,7 +71,7 @@ namespace FexDwnl
             listBox1.Items.Clear();
             foreach (var entry in await _mainForm.FetchFex())
             {
-                listBox1.Items.Add(entry.Name);
+                listBox1.Items.Add(entry.PathName);
             }
             if (listBox1.Items.Count > 0)
             {
