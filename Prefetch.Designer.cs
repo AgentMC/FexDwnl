@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Prefetch));
             listBox1 = new ListBox();
             label1 = new Label();
             label2 = new Label();
@@ -41,100 +42,62 @@
             // 
             // listBox1
             // 
-            listBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            resources.ApplyResources(listBox1, "listBox1");
             listBox1.FormattingEnabled = true;
-            listBox1.Location = new Point(12, 27);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(680, 184);
-            listBox1.TabIndex = 0;
             listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 9);
+            resources.ApplyResources(label1, "label1");
             label1.Name = "label1";
-            label1.Size = new Size(67, 15);
-            label1.TabIndex = 1;
-            label1.Text = "Files on Fex";
             // 
             // label2
             // 
-            label2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label2.AutoSize = true;
-            label2.Location = new Point(12, 217);
+            resources.ApplyResources(label2, "label2");
             label2.Name = "label2";
-            label2.Size = new Size(127, 15);
-            label2.TabIndex = 2;
-            label2.Text = "Existing matching rule:";
             // 
             // matchingRuleResult
             // 
-            matchingRuleResult.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            matchingRuleResult.Location = new Point(12, 235);
+            resources.ApplyResources(matchingRuleResult, "matchingRuleResult");
             matchingRuleResult.Name = "matchingRuleResult";
             matchingRuleResult.ReadOnly = true;
-            matchingRuleResult.Size = new Size(599, 23);
-            matchingRuleResult.TabIndex = 3;
             // 
             // label3
             // 
-            label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label3.AutoSize = true;
-            label3.Location = new Point(12, 261);
+            resources.ApplyResources(label3, "label3");
             label3.Name = "label3";
-            label3.Size = new Size(194, 15);
-            label3.TabIndex = 5;
-            label3.Text = "Test a regex against the selected file";
             // 
             // regexTextbox
             // 
-            regexTextbox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            regexTextbox.Location = new Point(12, 279);
+            resources.ApplyResources(regexTextbox, "regexTextbox");
             regexTextbox.Name = "regexTextbox";
-            regexTextbox.Size = new Size(493, 23);
-            regexTextbox.TabIndex = 6;
             regexTextbox.TextChanged += Regex_TextChanged;
             // 
             // regexResultTextbox
             // 
-            regexResultTextbox.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            regexResultTextbox.Location = new Point(511, 280);
+            resources.ApplyResources(regexResultTextbox, "regexResultTextbox");
             regexResultTextbox.Name = "regexResultTextbox";
             regexResultTextbox.ReadOnly = true;
-            regexResultTextbox.Size = new Size(100, 23);
-            regexResultTextbox.TabIndex = 7;
-            regexResultTextbox.Text = "(empty)";
-            regexResultTextbox.TextAlign = HorizontalAlignment.Center;
             // 
             // addRegexButton
             // 
-            addRegexButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            addRegexButton.Enabled = false;
-            addRegexButton.Location = new Point(617, 279);
+            resources.ApplyResources(addRegexButton, "addRegexButton");
             addRegexButton.Name = "addRegexButton";
-            addRegexButton.Size = new Size(75, 23);
-            addRegexButton.TabIndex = 8;
-            addRegexButton.Text = "Add rule";
             addRegexButton.UseVisualStyleBackColor = true;
             addRegexButton.Click += ButtonAddRule_Click;
             // 
             // refreshButton
             // 
-            refreshButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            refreshButton.Location = new Point(617, 235);
+            resources.ApplyResources(refreshButton, "refreshButton");
             refreshButton.Name = "refreshButton";
-            refreshButton.Size = new Size(75, 23);
-            refreshButton.TabIndex = 4;
-            refreshButton.Text = "Refresh";
             refreshButton.UseVisualStyleBackColor = true;
             refreshButton.Click += RefreshHandler;
             // 
             // Prefetch
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            resources.ApplyResources(this, "$this");
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(704, 317);
             Controls.Add(refreshButton);
             Controls.Add(addRegexButton);
             Controls.Add(regexResultTextbox);
@@ -145,7 +108,6 @@
             Controls.Add(label1);
             Controls.Add(listBox1);
             Name = "Prefetch";
-            Text = "Prefetch Fex Files";
             ResumeLayout(false);
             PerformLayout();
         }

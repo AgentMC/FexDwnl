@@ -70,6 +70,15 @@ namespace FexDwnl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to unable to pull data from Fex.
+        /// </summary>
+        internal static string ErrUnableToFetchFex {
+            get {
+                return ResourceManager.GetString("ErrUnableToFetchFex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to unable to set culture to [{0}].
         /// </summary>
         internal static string ErrUnableToSetCultureToFmt {
@@ -79,7 +88,7 @@ namespace FexDwnl.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;(empty)&quot;.
+        ///   Looks up a localized string similar to (empty).
         /// </summary>
         internal static string LPfRgxEmpty {
             get {
@@ -126,9 +135,9 @@ namespace FexDwnl.Properties {
         /// <summary>
         ///   Looks up a localized string similar to No rule matches, Downloads folder will be used instead..
         /// </summary>
-        internal static string LPfStateUUseDownloadsFolder {
+        internal static string LPfStateUseDownloadsFolder {
             get {
-                return ResourceManager.GetString("LPfStateUUseDownloadsFolder", resourceCulture);
+                return ResourceManager.GetString("LPfStateUseDownloadsFolder", resourceCulture);
             }
         }
         
@@ -160,7 +169,7 @@ namespace FexDwnl.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping {0}: no regex match..
+        ///   Looks up a localized string similar to Skipping {0}: no rule matches..
         /// </summary>
         internal static string LStateSkipSelectorNoMatchFmt {
             get {

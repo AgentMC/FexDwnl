@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             fexId = new TextBox();
             label1 = new Label();
             rules = new ListView();
@@ -48,104 +49,66 @@
             // 
             // fexId
             // 
-            fexId.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            fexId.Location = new Point(12, 27);
+            resources.ApplyResources(fexId, "fexId");
             fexId.Name = "fexId";
-            fexId.Size = new Size(385, 23);
-            fexId.TabIndex = 0;
             fexId.TextChanged += TextBoxFexId_TextChanged;
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(12, 9);
+            resources.ApplyResources(label1, "label1");
             label1.Name = "label1";
-            label1.Size = new Size(76, 15);
-            label1.TabIndex = 1;
-            label1.Text = "FeX ID or link";
             // 
             // rules
             // 
-            rules.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            resources.ApplyResources(rules, "rules");
             rules.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2 });
             rules.FullRowSelect = true;
-            rules.Location = new Point(12, 71);
             rules.Name = "rules";
-            rules.Size = new Size(547, 187);
-            rules.TabIndex = 5;
             rules.UseCompatibleStateImageBehavior = false;
             rules.View = View.Details;
             rules.SelectedIndexChanged += Rules_SelectedIndexChanged;
             // 
             // columnHeader1
             // 
-            columnHeader1.Text = "Regex";
-            columnHeader1.Width = 125;
+            resources.ApplyResources(columnHeader1, "columnHeader1");
             // 
             // columnHeader2
             // 
-            columnHeader2.Text = "Path";
-            columnHeader2.Width = 600;
+            resources.ApplyResources(columnHeader2, "columnHeader2");
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(12, 53);
+            resources.ApplyResources(label2, "label2");
             label2.Name = "label2";
-            label2.Size = new Size(89, 15);
-            label2.TabIndex = 4;
-            label2.Text = "Download rules";
             // 
             // downloadButton
             // 
-            downloadButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            downloadButton.Enabled = false;
-            downloadButton.Location = new Point(403, 27);
+            resources.ApplyResources(downloadButton, "downloadButton");
             downloadButton.Name = "downloadButton";
-            downloadButton.Size = new Size(75, 23);
-            downloadButton.TabIndex = 2;
-            downloadButton.Text = "Download";
             downloadButton.UseVisualStyleBackColor = true;
             downloadButton.Click += ButtonDownload_Click;
             // 
             // progressBar1
             // 
-            progressBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            progressBar1.Location = new Point(12, 309);
+            resources.ApplyResources(progressBar1, "progressBar1");
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(547, 23);
-            progressBar1.TabIndex = 9;
             // 
             // label3
             // 
-            label3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label3.AutoSize = true;
-            label3.Location = new Point(12, 291);
+            resources.ApplyResources(label3, "label3");
             label3.Name = "label3";
-            label3.Size = new Size(73, 15);
-            label3.TabIndex = 8;
-            label3.Text = "File progress";
             // 
             // addRuleButton
             // 
-            addRuleButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            addRuleButton.Location = new Point(12, 264);
+            resources.ApplyResources(addRuleButton, "addRuleButton");
             addRuleButton.Name = "addRuleButton";
-            addRuleButton.Size = new Size(75, 23);
-            addRuleButton.TabIndex = 6;
-            addRuleButton.Text = "Add";
             addRuleButton.UseVisualStyleBackColor = true;
             addRuleButton.Click += ButtonAddRule_Click;
             // 
             // removeRulesButton
             // 
-            removeRulesButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            removeRulesButton.Enabled = false;
-            removeRulesButton.Location = new Point(93, 264);
+            resources.ApplyResources(removeRulesButton, "removeRulesButton");
             removeRulesButton.Name = "removeRulesButton";
-            removeRulesButton.Size = new Size(75, 23);
-            removeRulesButton.TabIndex = 7;
-            removeRulesButton.Text = "Remove";
             removeRulesButton.UseVisualStyleBackColor = true;
             removeRulesButton.Click += ButtonRemoveRules_Click;
             // 
@@ -155,43 +118,28 @@
             // 
             // label4
             // 
-            label4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            label4.AutoSize = true;
-            label4.Location = new Point(135, 291);
+            resources.ApplyResources(label4, "label4");
             label4.Name = "label4";
-            label4.Size = new Size(0, 15);
-            label4.TabIndex = 10;
             // 
             // fetchButton
             // 
-            fetchButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            fetchButton.Enabled = false;
-            fetchButton.Location = new Point(484, 27);
+            resources.ApplyResources(fetchButton, "fetchButton");
             fetchButton.Name = "fetchButton";
-            fetchButton.Size = new Size(75, 23);
-            fetchButton.TabIndex = 3;
-            fetchButton.Text = "Fetch files";
             fetchButton.UseVisualStyleBackColor = true;
             fetchButton.Click += ButtonFetch_Click;
             // 
             // editRuleButton
             // 
-            editRuleButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            editRuleButton.Enabled = false;
-            editRuleButton.Location = new Point(174, 264);
+            resources.ApplyResources(editRuleButton, "editRuleButton");
             editRuleButton.Name = "editRuleButton";
-            editRuleButton.Size = new Size(75, 23);
-            editRuleButton.TabIndex = 11;
-            editRuleButton.Text = "Edit";
             editRuleButton.UseVisualStyleBackColor = true;
             editRuleButton.Click += ButtonAddRule_Click;
             // 
             // MainForm
             // 
             AcceptButton = downloadButton;
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            resources.ApplyResources(this, "$this");
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(571, 350);
             Controls.Add(editRuleButton);
             Controls.Add(fetchButton);
             Controls.Add(label4);
@@ -205,7 +153,6 @@
             Controls.Add(label1);
             Controls.Add(fexId);
             Name = "MainForm";
-            Text = "FeX downloader";
             FormClosed += Form_Closed;
             Load += Form_Load;
             ResumeLayout(false);

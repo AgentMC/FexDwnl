@@ -117,43 +117,44 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AppName" xml:space="preserve">
-    <value>Fex Downloader</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="AppName" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="ErrUnableToFetchFex" xml:space="preserve">
-    <value>unable to pull data from Fex</value>
+    <value>неможливо завантажити дані з Fex</value>
   </data>
   <data name="ErrUnableToSetCultureToFmt" xml:space="preserve">
-    <value>unable to set culture to [{0}]</value>
+    <value>неможливо задати культуру [{0}]</value>
   </data>
   <data name="LPfRgxEmpty" xml:space="preserve">
-    <value>(empty)</value>
+    <value>(пусто)</value>
   </data>
   <data name="LPfRgxInvalid" xml:space="preserve">
-    <value>INVALID REGEX!</value>
+    <value>НЕВІРНИЙ РЕГЕКС!</value>
   </data>
   <data name="LPfRgxMatch" xml:space="preserve">
-    <value>MATCH!</value>
+    <value>СПІВПАДАЄ!</value>
   </data>
   <data name="LPfRgxNoMatch" xml:space="preserve">
-    <value>No match.</value>
+    <value>Не співпадає.</value>
   </data>
   <data name="LPfStateNoItemSelected" xml:space="preserve">
-    <value>No item selected</value>
+    <value>Елемент не обрано</value>
   </data>
   <data name="LPfStateUseDownloadsFolder" xml:space="preserve">
-    <value>No rule matches, Downloads folder will be used instead.</value>
+    <value>Жодне правило не підходить, буде використано папку Завантажень.</value>
   </data>
   <data name="LStateDwnlComplete" xml:space="preserve">
-    <value>Download complete</value>
+    <value>Завантаження завершено</value>
   </data>
   <data name="LStateFetching" xml:space="preserve">
-    <value>Fetching...</value>
+    <value>Запит...</value>
   </data>
   <data name="LStateSkipSelectorFmt" xml:space="preserve">
-    <value>Skipping {0}: file already downloaded.</value>
+    <value>Пропуск {0}: файл вже завантажено.</value>
   </data>
   <data name="LStateSkipSelectorNoMatchFmt" xml:space="preserve">
-    <value>Skipping {0}: no rule matches.</value>
+    <value>Пропуск {0}: жодне правило не підходить.</value>
   </data>
 </root>

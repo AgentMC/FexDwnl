@@ -134,9 +134,18 @@ namespace FexDwnl
 
         private async Task<List<FexChild>> FetchFex(string key, ulong? childId = null)
         {
+            List<FexChild> result;
             var fexApi = $"https://api.fex.net/api/v2/file/share/children/{key}{(childId == null ? string.Empty : "/" + childId)}?page=1&sort_by=name&per_page=500&is_desc=1";
-            var jFex = await client.GetFromJsonAsync<FexRoot>(fexApi, SO);
-            var result = jFex?.Children ?? [];
+            try
+            {
+                var jFex = await client.GetFromJsonAsync<FexRoot>(fexApi, SO);
+                result = jFex?.Children ?? [];
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"{Resources.AppName} - {Resources.ErrUnableToFetchFex} - {ex}", Resources.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return [];
+            }
             for (int i = result.Count - 1; i >= 0; i--)
             {
                 var r = result[i];
