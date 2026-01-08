@@ -170,7 +170,7 @@
             fetchButton.Name = "fetchButton";
             fetchButton.Size = new Size(75, 23);
             fetchButton.TabIndex = 3;
-            fetchButton.Text = "Fetch";
+            fetchButton.Text = "Fetch files";
             fetchButton.UseVisualStyleBackColor = true;
             fetchButton.Click += ButtonFetch_Click;
             // 

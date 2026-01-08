@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+using FexDwnl.Properties;
 using System.Net.Http.Json;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -30,6 +30,7 @@ namespace FexDwnl
 
         private async void Form_Load(object sender, EventArgs e)
         {
+            Text = Resources.AppName;
             if (File.Exists(Store))
             {
                 using StreamReader sr = new(Store, System.Text.Encoding.UTF8);
@@ -161,7 +162,7 @@ namespace FexDwnl
         private async void ButtonDownload_Click(object sender, EventArgs e)
         {
             downloadButton.Enabled = false;
-            label4.Text = "Fetching...";
+            label4.Text = Resources.LStateFetching;
             var children = await FetchFex();
 
             var targetPaths = children.ToDictionary(c => c.PathName, c => GetFolderForFileByRule(c.PathName));
@@ -202,12 +203,12 @@ namespace FexDwnl
                             }
                             else
                             {
-                                await ShowMsgDelay(Color.Green, $"Skipping {selector}: file already downloaded.", 1000);
+                                await ShowMsgDelay(Color.Green, Resources.LStateSkipSelectorFmt.Format(selector!), 1000);
                             }
                         }
                         else
                         {
-                            await ShowMsgDelay(Color.Red, $"Skipping {selector}: no regex match.", 3000);
+                            await ShowMsgDelay(Color.Red, Resources.LStateSkipSelectorNoMatchFmt.Format(selector!), 3000);
                         }
 
                         flowControl = DialogResult.Ignore;
@@ -217,7 +218,7 @@ namespace FexDwnl
                         i--;
                         flowControl = MessageBox.Show(this,
                                                       ex.ToString(),
-                                                      this.Text,
+                                                      Text,
                                                       MessageBoxButtons.AbortRetryIgnore,
                                                       MessageBoxIcon.Error);
                     }
@@ -230,7 +231,7 @@ namespace FexDwnl
             _timerStop = true;
             label4.Text = string.Empty;
             downloadButton.Enabled = true;
-            MessageBox.Show(this, "Download complete", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(this, Resources.LStateDwnlComplete, Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private async Task ShowMsgDelay(Color color, string msg, int delayMs)

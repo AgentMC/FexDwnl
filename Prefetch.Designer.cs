@@ -43,7 +43,6 @@
             // 
             listBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listBox1.FormattingEnabled = true;
-            listBox1.ItemHeight = 15;
             listBox1.Location = new Point(12, 27);
             listBox1.Name = "listBox1";
             listBox1.Size = new Size(680, 184);
@@ -55,9 +54,9 @@
             label1.AutoSize = true;
             label1.Location = new Point(12, 9);
             label1.Name = "label1";
-            label1.Size = new Size(30, 15);
+            label1.Size = new Size(67, 15);
             label1.TabIndex = 1;
-            label1.Text = "Files";
+            label1.Text = "Files on Fex";
             // 
             // label2
             // 
@@ -65,9 +64,9 @@
             label2.AutoSize = true;
             label2.Location = new Point(12, 217);
             label2.Name = "label2";
-            label2.Size = new Size(74, 15);
+            label2.Size = new Size(127, 15);
             label2.TabIndex = 2;
-            label2.Text = "Existing rule:";
+            label2.Text = "Existing matching rule:";
             // 
             // matchingRuleResult
             // 
@@ -84,9 +83,9 @@
             label3.AutoSize = true;
             label3.Location = new Point(12, 261);
             label3.Name = "label3";
-            label3.Size = new Size(59, 15);
+            label3.Size = new Size(194, 15);
             label3.TabIndex = 5;
-            label3.Text = "Test regex";
+            label3.Text = "Test a regex against the selected file";
             // 
             // regexTextbox
             // 
@@ -116,7 +115,7 @@
             addRegexButton.Name = "addRegexButton";
             addRegexButton.Size = new Size(75, 23);
             addRegexButton.TabIndex = 8;
-            addRegexButton.Text = "Add";
+            addRegexButton.Text = "Add rule";
             addRegexButton.UseVisualStyleBackColor = true;
             addRegexButton.Click += ButtonAddRule_Click;
             // 
@@ -146,7 +145,7 @@
             Controls.Add(label1);
             Controls.Add(listBox1);
             Name = "Prefetch";
-            Text = "Prefetch";
+            Text = "Prefetch Fex Files";
             ResumeLayout(false);
             PerformLayout();
         }

@@ -43,9 +43,9 @@
             label1.AutoSize = true;
             label1.Location = new Point(12, 9);
             label1.Name = "label1";
-            label1.Size = new Size(95, 15);
+            label1.Size = new Size(89, 15);
             label1.TabIndex = 0;
-            label1.Text = "File Name Regex";
+            label1.Text = "File name regex";
             // 
             // resultRegex
             // 

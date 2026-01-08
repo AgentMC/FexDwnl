@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using FexDwnl.Properties;
+using System.Text.RegularExpressions;
 
 namespace FexDwnl
 {
@@ -8,6 +9,7 @@ namespace FexDwnl
         {
             InitializeComponent();
             _mainForm = parent;
+            regexResultTextbox.Text = Resources.LPfRgxEmpty;
         }
 
         private readonly MainForm _mainForm;
@@ -23,13 +25,13 @@ namespace FexDwnl
             if (listBox1.SelectedIndex == -1)
             {
                 regexTextbox.Enabled = false;
-                matchingRuleResult.Text = "No item selected";
+                matchingRuleResult.Text = Resources.LPfStateNoItemSelected;
             }
             else
             {
                 regexTextbox.Enabled = true;
-                var folder = _mainForm.GetFolderForFileByRule(listBox1.SelectedItem as string);
-                matchingRuleResult.Text = folder ?? "No rule matches, Downloads folder will be used instead.";
+                var folder = _mainForm.GetFolderForFileByRule((string)listBox1.SelectedItem!);
+                matchingRuleResult.Text = folder ?? Resources.LPfStateUUseDownloadsFolder;
             }
         }
 
@@ -39,14 +41,14 @@ namespace FexDwnl
             {
                 try
                 {
-                    if (Regex.IsMatch(listBox1.SelectedItem as string, regexTextbox.Text))
+                    if (Regex.IsMatch(listBox1.SelectedItem as string ?? string.Empty, regexTextbox.Text))
                     {
-                        regexResultTextbox.Text = "MATCH!";
+                        regexResultTextbox.Text = Resources.LPfRgxMatch;
                         regexResultTextbox.BackColor = Color.Green;
                     }
                     else
                     {
-                        regexResultTextbox.Text = "No match.";
+                        regexResultTextbox.Text = Resources.LPfRgxNoMatch;
                         regexResultTextbox.BackColor = Color.Orange;
                     }
                     addRegexButton.Enabled = true;
@@ -54,14 +56,14 @@ namespace FexDwnl
                 catch
                 {
                     addRegexButton.Enabled = false;
-                    regexResultTextbox.Text = "INVALID REGEX!";
+                    regexResultTextbox.Text = Resources.LPfRgxInvalid;
                     regexResultTextbox.BackColor = Color.Red;
                 }
             }
             else
             {
                 addRegexButton.Enabled = false;
-                regexResultTextbox.Text = "(empty)";
+                regexResultTextbox.Text = Resources.LPfRgxEmpty;
                 regexResultTextbox.BackColor = SystemColors.Control;
             }
         }
