@@ -1,6 +1,14 @@
 # About FexDwnl
 
 This is an application to download files from FeX.
+Тепер і українською :)
+
+## Locale Config / Конфігурація перекладу
+
+FexDwnl will load in Ukrainian on Ukrainian Windows and otherwise English. You can force the Ukrainian locale if you have another Windows locale. To do this, in the file `FexDwnl.dll.config`, set the value for parameter `"ForceLocale"` to `uk-UA` as shown below.
+
+FexDwnl запуститься українською на українській Windows та англійською у інших випадках. Українську також можна використовувати примусово. Для цього, у файлі `FexDwnl.dll.config`, виставьте значення параметру `"ForceLocale"` в `uk-UA` як показано нижче.
+<img width="650" alt="image" src="https://github.com/user-attachments/assets/36d371a0-3496-41e9-a386-062df0f608a8" />
 
 # Features
 
