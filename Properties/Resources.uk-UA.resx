@@ -145,6 +145,12 @@
   <data name="LPfStateUseDownloadsFolder" xml:space="preserve">
     <value>Жодне правило не підходить, буде використано папку Завантажень.</value>
   </data>
+  <data name="LSpeedAvg" xml:space="preserve">
+    <value>в середньому</value>
+  </data>
+  <data name="LSpeedCalculating" xml:space="preserve">
+    <value>розрахунок...</value>
+  </data>
   <data name="LStateDwnlComplete" xml:space="preserve">
     <value>Завантаження завершено</value>
   </data>

@@ -45,6 +45,7 @@
             label4 = new Label();
             fetchButton = new Button();
             editRuleButton = new Button();
+            label5 = new Label();
             SuspendLayout();
             // 
             // fexId
@@ -135,11 +136,18 @@
             editRuleButton.UseVisualStyleBackColor = true;
             editRuleButton.Click += ButtonAddRule_Click;
             // 
+            // label5
+            // 
+            resources.ApplyResources(label5, "label5");
+            label5.BackColor = Color.Transparent;
+            label5.Name = "label5";
+            // 
             // MainForm
             // 
             AcceptButton = downloadButton;
             resources.ApplyResources(this, "$this");
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(label5);
             Controls.Add(editRuleButton);
             Controls.Add(fetchButton);
             Controls.Add(label4);
@@ -176,5 +184,6 @@
         private Label label4;
         private Button fetchButton;
         private Button editRuleButton;
+        private Label label5;
     }
 }

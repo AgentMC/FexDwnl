@@ -144,6 +144,12 @@
   <data name="LPfStateUseDownloadsFolder" xml:space="preserve">
     <value>No rule matches, Downloads folder will be used instead.</value>
   </data>
+  <data name="LSpeedAvg" xml:space="preserve">
+    <value>average</value>
+  </data>
+  <data name="LSpeedCalculating" xml:space="preserve">
+    <value>calculating...</value>
+  </data>
   <data name="LStateDwnlComplete" xml:space="preserve">
     <value>Download complete</value>
   </data>

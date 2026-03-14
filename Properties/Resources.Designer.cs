@@ -142,6 +142,24 @@ namespace FexDwnl.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to average.
+        /// </summary>
+        internal static string LSpeedAvg {
+            get {
+                return ResourceManager.GetString("LSpeedAvg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to calculating....
+        /// </summary>
+        internal static string LSpeedCalculating {
+            get {
+                return ResourceManager.GetString("LSpeedCalculating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Download complete.
         /// </summary>
         internal static string LStateDwnlComplete {

@@ -24,8 +24,10 @@ namespace FexDwnl
 
 
         private Stream? _writer = null;
-        private int _length = 0;
+        private int _lengthMB = 0;
+        private long _contentLength = 0;
         private bool _timerStop = false;
+        private bool _timerReload = false;
 
 
         private async void Form_Load(object sender, EventArgs e)
@@ -201,9 +203,11 @@ namespace FexDwnl
                                 using var writer = new StreamWriter(filePath);
 
                                 _writer = writer.BaseStream;
-                                _length = AsIntMB(webFile.Size);
+                                _contentLength = webFile.Size;
+                                _lengthMB = AsIntMB(_contentLength);
+                                _timerReload = true;
                                 timer1.Start();
-                                label4.Text = $"{selector} ({_length}MB): {filePath}";
+                                label4.Text = $"{selector} ({_lengthMB}MB): {filePath}";
                 
                                 using var webFileStream = await client.GetStreamAsync(webFile.DownloadUrl);
                                 await webFileStream.CopyToAsync(_writer);
@@ -262,16 +266,51 @@ namespace FexDwnl
             }
         }
 
+#pragma warning disable CS8618 
+        private static Marker Start;
+#pragma warning restore CS8618 
+        private readonly List<Marker> _speedTracker = [];
+        private DateTime _downloadStartStamp;
+
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (_writer != null && _writer.CanWrite)
             {
-                if (progressBar1.Maximum != _length)
+                var now = DateTime.Now;
+                if (_timerReload)
                 {
+                    _timerReload = false;
                     progressBar1.Value = 0;
-                    progressBar1.Maximum = _length;
+                    progressBar1.Maximum = _lengthMB;
+                    _downloadStartStamp = now.AddMilliseconds(-timer1.Interval);
+                    Start = new(_downloadStartStamp, 0);
+                    _speedTracker.Clear();
+                    _speedTracker.Add(Start);
                 }
-                progressBar1.Value = AsIntMB(_writer.Position);
+                var pos = _writer.Position;
+                progressBar1.Value = AsIntMB(pos);
+
+                _speedTracker.Add(new(now, pos));
+                bool doCleanup = false;
+                Marker marker = Start; //csc does not understand it's always initialized below
+                for (int i = _speedTracker.Count - 1; i >= 0; i--)
+                {
+                    if (doCleanup)
+                    {
+                        _speedTracker.RemoveAt(i);
+                    }
+                    else if ((now - _speedTracker[i].Time).TotalSeconds >= 5 || i == 0)
+                    {
+                        marker = _speedTracker[i];
+                        doCleanup = true;
+                    }
+                }
+                var speedLast5 = AsSizePerSec(now, pos, marker, out var speedBps);
+                var speedAvg = AsSizePerSec(now, pos, Start, out var _);
+                var eta = speedBps > 0
+                          ? TimeSpan.FromSeconds(1 + (_contentLength - pos) / speedBps).ToString("hh':'mm':'ss") 
+                          : Resources.LSpeedCalculating;
+                label5.Text = $"{speedLast5} ({Resources.LSpeedAvg}: {speedAvg}) ETA: {eta}";
             }
             else
             {
@@ -280,7 +319,11 @@ namespace FexDwnl
                     _timerStop = false;
                     timer1.Stop();
                 }
-                progressBar1.Value = 0;
+                if (progressBar1.Value != 0) {
+                    progressBar1.Value = 0;
+                    label5.Text = string.Empty;
+                    _speedTracker.Clear();
+                }
             }
         }
 
@@ -288,6 +331,21 @@ namespace FexDwnl
 
         private static int AsIntMB(long l) => (int)(l / (1024 * 1024));
 
+        private static readonly string[] Modifiers = [string.Empty, "K", "M", "G", "P"];
+        private static string AsSizePerSec(DateTime now, long currentPosition, Marker previousMarker, out double speedBps)
+        {
+            var sec = (now - previousMarker.Time).TotalSeconds;
+            var size = currentPosition - previousMarker.Position;
+            var speed = size / sec;
+            speedBps = speed;
+            int level = 0;
+            while(speed > 1024)
+            {
+                speed /= 1024;
+                level++;
+            }
+            return $"{speed:f2} {Modifiers[level]}B/s";
+        }
 
         private static readonly Guid FolderDownloads = new("374DE290-123F-4565-9164-39C4925E467B");
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, PreserveSig = false)]
@@ -300,5 +358,7 @@ namespace FexDwnl
         }
 
         public record FexRoot(List<FexChild> Children);
+
+        private record Marker(DateTime Time, long Position);
     }
 }
