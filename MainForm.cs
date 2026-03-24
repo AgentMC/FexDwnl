@@ -307,9 +307,15 @@ namespace FexDwnl
                 }
                 var speedLast5 = AsSizePerSec(now, pos, marker, out var speedBps);
                 var speedAvg = AsSizePerSec(now, pos, Start, out var _);
-                var eta = speedBps > 0
-                          ? TimeSpan.FromSeconds(1 + (_contentLength - pos) / speedBps).ToString("hh':'mm':'ss") 
-                          : Resources.LSpeedCalculating;
+                string eta = Resources.LSpeedCalculating;
+                if(speedBps > 0)
+                {
+                    var etaSec = 1 + (_contentLength - pos) / speedBps;
+                    if(etaSec <= long.MaxValue)
+                    {
+                        eta = TimeSpan.FromSeconds(etaSec).ToString("hh':'mm':'ss");
+                    }
+                }
                 label5.Text = $"{speedLast5} ({Resources.LSpeedAvg}: {speedAvg}) ETA: {eta}";
             }
             else
