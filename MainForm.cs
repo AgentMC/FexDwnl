@@ -174,25 +174,27 @@ namespace FexDwnl
         {
             downloadButton.Enabled = false;
             label4.Text = Resources.LStateFetching;
-            var children = await FetchFex();
+            var fexChildren = await FetchFex();
 
-            var targetPaths = children.ToDictionary(c => c.PathName, c => GetFolderForFileByRule(c.PathName));
-            bool allowDownloads = targetPaths.Values.All(v => v == null);
+            var targetLocalDwnlPaths = fexChildren.ToDictionary(c => c.PathName, c => GetFolderForFileByRule(c.PathName));
+            bool allowUseDownloadsFolder = targetLocalDwnlPaths.Values.All(v => v == null);
 
             int i = 0;
-            foreach (var webFile in children)
+            foreach (var webFile in fexChildren)
             {
                 var flowControl = DialogResult.Retry;
                 while (flowControl == DialogResult.Retry)
                 {
                     try
                     {
-                        var selector = $"{++i}/{children.Count}";
-                        var fileName = webFile.PathName;
-                        var dwnlLoc = targetPaths[fileName] ?? (allowDownloads ? DownloadsFolder : null);
+                        var selector = $"{++i}/{fexChildren.Count}";
+                        var fexPathAndFileName = webFile.PathName;
+                        var dwnlLoc = targetLocalDwnlPaths[fexPathAndFileName] ?? (allowUseDownloadsFolder ? DownloadsFolder : null);
                         if (dwnlLoc != null)
                         {
-                            var filePath = Path.Combine(dwnlLoc, fileName);
+                            var filePath = Path.Join(dwnlLoc,
+                                                     FixUnsafeChars(Path.GetDirectoryName(fexPathAndFileName), PathInvalidChars),
+                                                     FixUnsafeChars(Path.GetFileName(fexPathAndFileName), FileInvalidChars));
 
                             var fileTargetLoc = Path.GetDirectoryName(filePath)!;
                             if(!Directory.Exists(fileTargetLoc)) Directory.CreateDirectory(fileTargetLoc);
@@ -216,12 +218,12 @@ namespace FexDwnl
                             }
                             else
                             {
-                                await ShowMsgDelay(Color.Green, Resources.LStateSkipSelectorFmt.Format(selector!), 1000);
+                                await ShowMsgDelay(Color.Green, Resources.LStateSkipSelectorFmt.Format(selector), 1000);
                             }
                         }
                         else
                         {
-                            await ShowMsgDelay(Color.Red, Resources.LStateSkipSelectorNoMatchFmt.Format(selector!), 3000);
+                            await ShowMsgDelay(Color.Red, Resources.LStateSkipSelectorNoMatchFmt.Format(selector), 3000);
                         }
 
                         flowControl = DialogResult.Ignore;
@@ -245,6 +247,40 @@ namespace FexDwnl
             label4.Text = string.Empty;
             downloadButton.Enabled = true;
             MessageBox.Show(this, Resources.LStateDwnlComplete, Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+
+        static readonly Dictionary<char, char> InvalidCharReplacementMap = new()
+        {
+            {'?', '？'}, //full-width quiestion mark
+            {'\\', '∖'}, //set minus
+            {'|', '∣'}, //vertical bar (dividers)
+            {'/', '∕'}, //division mark
+            {':', '꞉'}, //modifier letter colon
+            {'"', '＂'}, //full-width quotation mark
+            {'<', '＜'}, //full-width less-than sign
+            {'>', '＞'}, //full-width greater-than sign
+            {'*', '⋆'}, //star operator
+        };
+        static readonly char[] PathInvalidChars = [.. Path.GetInvalidPathChars(), .. InvalidCharReplacementMap.Keys];
+        static readonly char[] FileInvalidChars = [.. Path.GetInvalidFileNameChars(), .. InvalidCharReplacementMap.Keys];
+
+        private static string? FixUnsafeChars(string? pathPart, char[] invalidChars)
+        {
+            if (pathPart == null) return null;
+            bool modified = false;
+            var pathChars = pathPart.ToCharArray();
+            for (var i = 0; i < pathChars.Length; i++) 
+            {
+                var chr = pathChars[i];
+                if (invalidChars.Contains(chr))
+                {
+                    pathChars[i] = InvalidCharReplacementMap.TryGetValue(chr, out var fix) ? fix : '_';
+                    modified = true;
+                }
+            }
+            if (!modified) return pathPart;
+            return new string(pathChars);
         }
 
         private async Task ShowMsgDelay(Color color, string msg, int delayMs)
