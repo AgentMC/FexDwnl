@@ -1,5 +1,6 @@
 using FexDwnl.Properties;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -15,11 +16,14 @@ namespace FexDwnl
         }
 
         private static readonly string Store = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FexDwnlSetup.json");
-        private static readonly JsonSerializerOptions SO = new()
+        private static readonly JsonSerializerOptions WebSerialization = new()
         {
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
         };
+        private static readonly JsonSerializerOptions LocalSerialization = new() {
+            PropertyNameCaseInsensitive = true
+        };       
         private readonly HttpClient client = new();        
 
 
@@ -32,17 +36,14 @@ namespace FexDwnl
 
         private async void Form_Load(object sender, EventArgs e)
         {
-            Text = Resources.AppName;
+            Text = $"{Resources.AppName} {Assembly.GetExecutingAssembly().GetName().Version}";
             if (File.Exists(Store))
             {
                 using StreamReader sr = new(Store, System.Text.Encoding.UTF8);
                 var json = JsonDocument.Parse(sr.ReadToEnd());
                 foreach (var item in json.RootElement.GetProperty("rules").EnumerateArray())
                 {
-                    rules.Items.Add(new ListViewItem([
-                            item.GetProperty("regex").GetString()!,
-                            item.GetProperty("path").GetString()!
-                        ]));
+                    rules.Items.Add(item.Deserialize<FexTableListViewItem>(LocalSerialization)!);
                 }
             }
             await client.GetAsync("https://api.fex.net/api/v1/config/anonymous"); //get fex UUID
@@ -55,11 +56,12 @@ namespace FexDwnl
             {
                 {
                     "rules",
-                    new JsonArray(rules.Items.Cast<ListViewItem>()
+                    new JsonArray(rules.Items.Cast<FexTableListViewItem>()
                                              .Select(lvi => new JsonObject
                                              {
-                                                { "regex", lvi.SubItems[0].Text},
-                                                { "path", lvi.SubItems[1].Text},
+                                                 { "regex", lvi.Regex},
+                                                 { "path", lvi.Path},
+                                                 { "lastKey", lvi.LastKey}
                                              })
                                              .ToArray())
                 }
@@ -73,8 +75,15 @@ namespace FexDwnl
 
         private void Rules_SelectedIndexChanged(object sender, EventArgs e)
         {
-            removeRulesButton.Enabled = rules.SelectedItems.Count > 0;
-            editRuleButton.Enabled = rules.SelectedItems.Count == 1;
+            if(rules.SelectedItems.Count > 0)
+            {
+                removeRulesButton.Enabled = true;
+                if(rules.SelectedItems.Count == 1)
+                {
+                    editRuleButton.Enabled = true;
+                    fexId.Text = ((FexTableListViewItem)rules.SelectedItems[0]).LastKey;
+                }
+            }
         }
 
         public void ButtonAddRule_Click(object sender, EventArgs e)
@@ -96,7 +105,7 @@ namespace FexDwnl
 
             if (addPair.ShowDialog(this) == DialogResult.OK)
             {
-                var lvi = new ListViewItem([addPair.resultRegex.Text, addPair.resultPath.Text]);
+                var lvi = new FexTableListViewItem(addPair.resultRegex.Text, addPair.resultPath.Text, string.Empty);
                 if(sender != editRuleButton)
                 {
                     rules.Items.Add(lvi);
@@ -112,17 +121,14 @@ namespace FexDwnl
 
         private void ButtonRemoveRules_Click(object sender, EventArgs e)
         {
-            rules.SelectedItems.Cast<ListViewItem>().ToList().ForEach(rules.Items.Remove);
+            rules.SelectedItems.Cast<FexTableListViewItem>().ToList().ForEach(rules.Items.Remove);
         }
 
-        public string? GetFolderForFileByRule(string fileName)
+        public FexTableListViewItem? GetRuleByFile(string fileName)
         {
             return rules.Items
-                        .Cast<ListViewItem>()
-                        .FirstOrDefault(i => Regex.IsMatch(fileName, i.SubItems[0].Text))
-                        ?.SubItems
-                        ?[1]
-                        ?.Text;
+                        .Cast<FexTableListViewItem>()
+                        .FirstOrDefault(i => Regex.IsMatch(fileName, i.Regex));
         }
 
 
@@ -140,7 +146,7 @@ namespace FexDwnl
             var fexApi = $"https://api.fex.net/api/v2/file/share/children/{key}{(childId == null ? string.Empty : "/" + childId)}?page=1&sort_by=name&per_page=500&is_desc=1";
             try
             {
-                var jFex = await client.GetFromJsonAsync<FexRoot>(fexApi, SO);
+                var jFex = await client.GetFromJsonAsync<FexRoot>(fexApi, WebSerialization);
                 result = jFex?.Children ?? [];
             }
             catch (Exception ex)
@@ -176,8 +182,8 @@ namespace FexDwnl
             label4.Text = Resources.LStateFetching;
             var fexChildren = await FetchFex();
 
-            var targetLocalDwnlPaths = fexChildren.ToDictionary(c => c.PathName, c => GetFolderForFileByRule(c.PathName));
-            bool allowUseDownloadsFolder = targetLocalDwnlPaths.Values.All(v => v == null);
+            var targetLocalDwnlRules = fexChildren.ToDictionary(c => c.PathName, c => GetRuleByFile(c.PathName));
+            bool allowUseDownloadsFolder = targetLocalDwnlRules.Values.All(r => string.IsNullOrEmpty(r?.Path));
 
             int i = 0;
             foreach (var webFile in fexChildren)
@@ -189,9 +195,14 @@ namespace FexDwnl
                     {
                         var selector = $"{++i}/{fexChildren.Count}";
                         var fexPathAndFileName = webFile.PathName;
-                        var dwnlLoc = targetLocalDwnlPaths[fexPathAndFileName] ?? (allowUseDownloadsFolder ? DownloadsFolder : null);
+                        var dwnlRule = targetLocalDwnlRules[fexPathAndFileName];
+                        var dwnlLoc = dwnlRule?.Path ?? (allowUseDownloadsFolder ? DownloadsFolder : null);
                         if (dwnlLoc != null)
                         {
+                            if(dwnlRule != null)
+                            {
+                                dwnlRule.LastKey = fexId.Text;
+                            }
                             var filePath = Path.Join(dwnlLoc,
                                                      FixUnsafeChars(Path.GetDirectoryName(fexPathAndFileName), PathInvalidChars),
                                                      FixUnsafeChars(Path.GetFileName(fexPathAndFileName), FileInvalidChars));
@@ -250,10 +261,9 @@ namespace FexDwnl
         }
 
 
-        static readonly Dictionary<char, char> InvalidCharReplacementMap = new()
+        static readonly Dictionary<char, char> InvalidCharReplacementMapPath = new()
         {
             {'?', '？'}, //full-width quiestion mark
-            {'\\', '∖'}, //set minus
             {'|', '∣'}, //vertical bar (dividers)
             {'/', '∕'}, //division mark
             {':', '꞉'}, //modifier letter colon
@@ -262,8 +272,12 @@ namespace FexDwnl
             {'>', '＞'}, //full-width greater-than sign
             {'*', '⋆'}, //star operator
         };
-        static readonly char[] PathInvalidChars = [.. Path.GetInvalidPathChars(), .. InvalidCharReplacementMap.Keys];
-        static readonly char[] FileInvalidChars = [.. Path.GetInvalidFileNameChars(), .. InvalidCharReplacementMap.Keys];
+        static readonly Dictionary<char, char> InvalidCharReplacementMapFile = new()
+        {
+            {'\\', '∖'}, //set minus
+        };
+        static readonly char[] PathInvalidChars = [.. Path.GetInvalidPathChars(), .. InvalidCharReplacementMapPath.Keys];
+        static readonly char[] FileInvalidChars = [.. Path.GetInvalidFileNameChars(), .. InvalidCharReplacementMapPath.Keys, ..InvalidCharReplacementMapFile.Keys];
 
         private static string? FixUnsafeChars(string? pathPart, char[] invalidChars)
         {
@@ -275,7 +289,11 @@ namespace FexDwnl
                 var chr = pathChars[i];
                 if (invalidChars.Contains(chr))
                 {
-                    pathChars[i] = InvalidCharReplacementMap.TryGetValue(chr, out var fix) ? fix : '_';
+                    pathChars[i] = InvalidCharReplacementMapPath.TryGetValue(chr, out var fix) 
+                                    ? fix 
+                                    : InvalidCharReplacementMapFile.TryGetValue(chr, out fix) 
+                                        ? fix 
+                                        : '_';
                     modified = true;
                 }
             }

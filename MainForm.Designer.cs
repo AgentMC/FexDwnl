@@ -35,6 +35,7 @@
             rules = new ListView();
             columnHeader1 = new ColumnHeader();
             columnHeader2 = new ColumnHeader();
+            columnHeader3 = new ColumnHeader();
             label2 = new Label();
             downloadButton = new Button();
             progressBar1 = new ProgressBar();
@@ -62,7 +63,7 @@
             // rules
             // 
             resources.ApplyResources(rules, "rules");
-            rules.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2 });
+            rules.Columns.AddRange(new ColumnHeader[] { columnHeader1, columnHeader2, columnHeader3 });
             rules.FullRowSelect = true;
             rules.Name = "rules";
             rules.UseCompatibleStateImageBehavior = false;
@@ -76,6 +77,10 @@
             // columnHeader2
             // 
             resources.ApplyResources(columnHeader2, "columnHeader2");
+            // 
+            // columnHeader3
+            // 
+            resources.ApplyResources(columnHeader3, "columnHeader3");
             // 
             // label2
             // 
@@ -185,5 +190,6 @@
         private Button fetchButton;
         private Button editRuleButton;
         private Label label5;
+        private ColumnHeader columnHeader3;
     }
 }

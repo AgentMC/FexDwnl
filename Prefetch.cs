@@ -30,8 +30,8 @@ namespace FexDwnl
             else
             {
                 regexTextbox.Enabled = true;
-                var folder = _mainForm.GetFolderForFileByRule((string)listBox1.SelectedItem!);
-                matchingRuleResult.Text = folder ?? Resources.LPfStateUseDownloadsFolder;
+                var folder = _mainForm.GetRuleByFile((string)listBox1.SelectedItem!);
+                matchingRuleResult.Text = folder?.Path ?? Resources.LPfStateUseDownloadsFolder;
                 Regex_TextChanged(sender, e);
             }
         }

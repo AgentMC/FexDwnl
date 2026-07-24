@@ -133,6 +133,9 @@
   <data name="columnHeader2.Text" xml:space="preserve">
     <value>Шлях</value>
   </data>
+  <data name="columnHeader3.Text" xml:space="preserve">
+    <value>Останній ID</value>
+  </data>
   <data name="label2.Size" type="System.Drawing.Size, System.Drawing">
     <value>134, 15</value>
   </data>

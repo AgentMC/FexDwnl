@@ -184,7 +184,13 @@
     <value>Path</value>
   </data>
   <data name="columnHeader2.Width" type="System.Int32, mscorlib">
-    <value>600</value>
+    <value>300</value>
+  </data>
+  <data name="columnHeader3.Text" xml:space="preserve">
+    <value>Last Used ID</value>
+  </data>
+  <data name="columnHeader3.Width" type="System.Int32, mscorlib">
+    <value>100</value>
   </data>
   <data name="rules.Location" type="System.Drawing.Point, System.Drawing">
     <value>12, 71</value>
@@ -514,6 +520,12 @@
     <value>columnHeader2</value>
   </data>
   <data name="&gt;&gt;columnHeader2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;columnHeader3.Name" xml:space="preserve">
+    <value>columnHeader3</value>
+  </data>
+  <data name="&gt;&gt;columnHeader3.Type" xml:space="preserve">
     <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;timer1.Name" xml:space="preserve">
